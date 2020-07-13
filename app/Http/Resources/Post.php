@@ -20,7 +20,7 @@ class Post extends JsonResource
                 'id' => $this->id,
                 'attributes' => [
                     'posted_by' => new User($this->user),
-                    'body' => 'Testing body'
+                    'body' => $this->body
                 ],
                 'links' => [
                     'self' => url('/posts/' . $this->id)
