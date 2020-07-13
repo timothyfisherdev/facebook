@@ -11,7 +11,7 @@ class PostController extends Controller
 {
 	public function index(Request $request)
 	{
-		return new PostCollection(Post::all());
+		return new PostCollection($request->user()->posts);
 	}
 
     public function store(Request $request)

@@ -13,32 +13,16 @@ class RetrievePostsTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function a_user_can_retrieve_posts()
+    public function a_user_can_retrieve_their_own_posts()
     {
         $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
-        $posts = factory(Post::class, 2)->create();
+        $posts = factory(Post::class, 2)->create(['user_id' => $user->id]);
 
         $response = $this->get('/api/posts');
 
         $response->assertStatus(200)->assertJson([
             'data' => [
-                [
-                    'data' => [
-                        'type' => 'posts',
-                        'id' => $posts->first()->id,
-                        'attributes' => [
-                            'posted_by' => [
-                                'data' => [
-                                    'attributes' => [
-                                        'name' => $posts->first()->user->name
-                                    ]
-                                ]
-                            ],
-                            'body' => $posts->first()->body
-                        ]
-                    ]
-                ],
                 [
                     'data' => [
                         'type' => 'posts',
@@ -54,8 +38,41 @@ class RetrievePostsTest extends TestCase
                             'body' => $posts->last()->body
                         ]
                     ]
+                ],
+                [
+                    'data' => [
+                        'type' => 'posts',
+                        'id' => $posts->first()->id,
+                        'attributes' => [
+                            'posted_by' => [
+                                'data' => [
+                                    'attributes' => [
+                                        'name' => $posts->first()->user->name
+                                    ]
+                                ]
+                            ],
+                            'body' => $posts->first()->body
+                        ]
+                    ]
                 ]
             ],
+            'links' => [
+                'self' => url('/posts')
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function a_user_can_only_retrieve_their_own_posts()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+        $posts = factory(Post::class, 2)->create();
+
+        $response = $this->get('/api/posts');
+
+        $response->assertStatus(200)->assertExactJson([
+            'data' => [],
             'links' => [
                 'self' => url('/posts')
             ]
