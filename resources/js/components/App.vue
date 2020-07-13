@@ -2,7 +2,13 @@
 	<div class="flex flex-col flex-1 h-screen overflow-y-hidden">
 		<Nav />
 
-		<router-view></router-view>
+		<div>
+			<div>Sidebar</div>
+
+			<div>
+				<router-view></router-view>
+			</div>
+		</div>
 	</div>
 </template>
 
