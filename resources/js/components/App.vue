@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col flex-1 h-screen overflow-y-hidden">
-		<nav />
+		<Nav />
 
 		<router-view></router-view>
 	</div>
