@@ -8,12 +8,12 @@ use Tests\TestCase;
 use App\User;
 use App\Post;
 
-class RetrievePostsTest extends TestCase
+class ReadPostsTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
-    public function a_user_can_retrieve_their_own_posts()
+    public function a_user_can_read_their_own_posts()
     {
         $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
@@ -67,7 +67,7 @@ class RetrievePostsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_only_retrieve_their_own_posts()
+    public function a_user_can_only_read_their_own_posts()
     {
         $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
