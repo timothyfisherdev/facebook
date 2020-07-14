@@ -19,18 +19,19 @@
 		},
 		data () {
 			return {
-				posts: null,
-				loading: true
+				loading: true,
+				posts: null
 			}
 		},
 		mounted () {
-			axios.get('/api/posts').then((res) => {
-				this.posts = res.data;
-			}).catch((error) => {
-				console.log('Unable to fetch posts.');
-			}).finally(() => {
-				this.loading = false;
-			});
+			axios.get('/api/posts')
+				.then((res) => {
+					this.posts = res.data;
+				}).catch((err) => {
+					console.log('Unable to fetch posts.');
+				}).finally(() => {
+					this.loading = false;
+				});
 		}
 	}
 </script>
