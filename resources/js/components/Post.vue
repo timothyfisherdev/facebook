@@ -6,12 +6,12 @@
 					<img src="https://image.cnbcfm.com/api/v1/image/106330923-1578676182018gettyimages-1178141599.jpeg?v=1584633147&w=1400&h=950" alt="" class="w-8 h-8 object-cover rounded-full" />
 				</div>
 				<div class="ml-6">
-					<div class="text-sm font-bold">Name User</div>
+					<div class="text-sm font-bold">{{ post.data.attributes.posted_by.data.attributes.name }}</div>
 					<div class="text-sm text-gray-600">12 minutes ago</div>
 				</div>
 			</div>
 			<div class="mt-4">
-				<p>Not having fun at all.</p>
+				<p>{{ post.data.attributes.body }}</p>
 			</div>
 		</div>
 
@@ -45,7 +45,13 @@
 
 <script>
 	export default {
-		name: 'Post'
+		name: 'Post',
+		props: {
+			post: {
+				type: Object,
+				required: true
+			}
+		}
 	}
 </script>
 
