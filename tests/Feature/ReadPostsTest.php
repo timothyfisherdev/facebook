@@ -77,7 +77,7 @@ class ReadPostsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_only_read_their_own_posts()
+    public function a_user_cannot_read_others_posts()
     {
         $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
