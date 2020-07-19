@@ -2140,7 +2140,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/posts').then(function (res) {
+    axios.get('/api/posts?include=user').then(function (res) {
       _this.posts = res.data;
     })["catch"](function (err) {
       console.log('Unable to fetch posts.');
@@ -31070,7 +31070,7 @@ var render = function() {
           _c("div", { staticClass: "ml-6" }, [
             _c("div", { staticClass: "text-sm font-bold" }, [
               _vm._v(
-                _vm._s(_vm.post.data.attributes.posted_by.data.attributes.name)
+                _vm._s(_vm.post.data.relationships.user.data.attributes.name)
               )
             ]),
             _vm._v(" "),

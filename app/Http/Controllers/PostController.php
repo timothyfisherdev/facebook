@@ -11,7 +11,21 @@ class PostController extends Controller
 {
 	public function index(Request $request)
 	{
-		return new PostCollection($request->user()->posts);
+        $posts = $request->user()->posts;
+
+        if ($include = $request->query('include')) {
+            if ($include !== 'user') {
+                return response()->json([
+                    'status' => '400',
+                    'title' => 'Invalid include parameter',
+                    'detail' => sprintf('Include parameter: %s is invalid.', $include)
+                ], 400);
+            }
+
+            $posts->load('user');
+        }
+
+		return new PostCollection($posts);
 	}
 
     public function store(Request $request)
@@ -20,7 +34,9 @@ class PostController extends Controller
     		'data.attributes.body' => ''
     	]);
 
-    	$post = $request->user()->posts()->create($data['data']['attributes']);
+    	$post = $request->user()->posts()
+            ->create($data['data']['attributes'])
+            ->load('user');
 
     	return new PostResource($post);
     }

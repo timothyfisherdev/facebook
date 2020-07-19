@@ -24,7 +24,7 @@
 			}
 		},
 		mounted () {
-			axios.get('/api/posts')
+			axios.get('/api/posts?include=user')
 				.then((res) => {
 					this.posts = res.data;
 				}).catch((err) => {

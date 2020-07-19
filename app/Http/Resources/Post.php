@@ -19,11 +19,15 @@ class Post extends JsonResource
                 'type' => 'posts',
                 'id' => $this->id,
                 'attributes' => [
-                    'posted_by' => new User($this->user),
                     'body' => $this->body,
                     'image' => $this->image,
                     'posted_at' => $this->created_at->diffForHumans()
                 ],
+                'relationships' => $this->whenLoaded('user', function () {
+                    return [
+                        'user' => new User($this->user)
+                    ];
+                }),
                 'links' => [
                     'self' => url('/posts/' . $this->id)
                 ]

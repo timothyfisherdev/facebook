@@ -19,7 +19,7 @@ class ReadPostsTest extends TestCase
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $posts = factory(Post::class, 2)->create(['user_id' => $user->id]);
 
-        $response = $this->get('/api/posts');
+        $response = $this->get('/api/posts?include=user');
 
         $response->assertStatus(200)->assertJson([
             'data' => [
@@ -28,16 +28,21 @@ class ReadPostsTest extends TestCase
                         'type' => 'posts',
                         'id' => $posts->last()->id,
                         'attributes' => [
-                            'posted_by' => [
-                                'data' => [
-                                    'attributes' => [
-                                        'name' => $posts->last()->user->name
-                                    ]
-                                ]
-                            ],
                             'body' => $posts->last()->body,
                             'image' => $posts->last()->image,
                             'posted_at' => $posts->last()->created_at->diffForHumans()
+                        ],
+                        'relationships' => [
+                            'user' => [
+                                'data' => [
+                                    'attributes' => [
+                                        'name' => $user->name
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'links' => [
+                            'self' => url('/posts/' . $posts->last()->id)
                         ]
                     ]
                 ],
@@ -46,16 +51,21 @@ class ReadPostsTest extends TestCase
                         'type' => 'posts',
                         'id' => $posts->first()->id,
                         'attributes' => [
-                            'posted_by' => [
-                                'data' => [
-                                    'attributes' => [
-                                        'name' => $posts->first()->user->name
-                                    ]
-                                ]
-                            ],
                             'body' => $posts->first()->body,
                             'image' => $posts->first()->image,
                             'posted_at' => $posts->first()->created_at->diffForHumans()
+                        ],
+                        'relationships' => [
+                            'user' => [
+                                'data' => [
+                                    'attributes' => [
+                                        'name' => $user->name
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'links' => [
+                            'self' => url('/posts/' . $posts->first()->id)
                         ]
                     ]
                 ]
