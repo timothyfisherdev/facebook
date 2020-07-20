@@ -25,9 +25,9 @@
 		},
 		mounted () {
 			axios.get('/api/posts?include=user')
-				.then((res) => {
+				.then(res => {
 					this.posts = res.data;
-				}).catch((err) => {
+				}).catch(err => {
 					console.log('Unable to fetch posts.');
 				}).finally(() => {
 					this.loading = false;

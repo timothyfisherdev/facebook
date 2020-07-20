@@ -17,9 +17,9 @@
 		},
 		mounted () {
 			axios.get('/api/users/' + this.$route.params.userId)
-				.then((res) => {
+				.then(res => {
 					this.user = res.data;
-				}).catch((err) => {
+				}).catch(err => {
 					console.log('Unable to fetch user data.');
 				}).finally(() => {
 					this.loading = false
