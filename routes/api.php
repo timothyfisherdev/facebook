@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->group(function () {
 	Route::apiResources([
 		'users' => 'UserController',
-		'posts' => 'PostController'
+		'posts' => 'PostController',
+		'users.posts' => 'UserPostController'
 	]);
 });

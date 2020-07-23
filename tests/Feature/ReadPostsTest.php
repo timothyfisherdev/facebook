@@ -24,54 +24,63 @@ class ReadPostsTest extends TestCase
         $response->assertStatus(200)->assertJson([
             'data' => [
                 [
-                    'data' => [
-                        'type' => 'posts',
-                        'id' => $posts->last()->id,
-                        'attributes' => [
-                            'body' => $posts->last()->body,
-                            'image' => $posts->last()->image,
-                            'posted_at' => $posts->last()->created_at->diffForHumans()
-                        ],
-                        'relationships' => [
-                            'user' => [
-                                'data' => [
-                                    'attributes' => [
-                                        'name' => $user->name
-                                    ]
-                                ]
+                    'type' => 'posts',
+                    'id' => $posts->last()->id,
+                    'attributes' => [
+                        'body' => $posts->last()->body,
+                        'image' => $posts->last()->image,
+                        'posted_at' => $posts->last()->created_at->diffForHumans()
+                    ],
+                    'relationships' => [
+                        'user' => [
+                            'data' => [
+                                'type' => 'users',
+                                'id' => $user->id
+                            ],
+                            'links' => [
+                                'related' => url('/posts/' . $posts->last()->id . '/user')
                             ]
-                        ],
-                        'links' => [
-                            'self' => url('/posts/' . $posts->last()->id)
                         ]
+                    ],
+                    'links' => [
+                        'self' => url('/posts/' . $posts->last()->id)
                     ]
                 ],
                 [
-                    'data' => [
-                        'type' => 'posts',
-                        'id' => $posts->first()->id,
-                        'attributes' => [
-                            'body' => $posts->first()->body,
-                            'image' => $posts->first()->image,
-                            'posted_at' => $posts->first()->created_at->diffForHumans()
-                        ],
-                        'relationships' => [
-                            'user' => [
-                                'data' => [
-                                    'attributes' => [
-                                        'name' => $user->name
-                                    ]
-                                ]
+                    'type' => 'posts',
+                    'id' => $posts->first()->id,
+                    'attributes' => [
+                        'body' => $posts->first()->body,
+                        'image' => $posts->first()->image,
+                        'posted_at' => $posts->first()->created_at->diffForHumans()
+                    ],
+                    'relationships' => [
+                        'user' => [
+                            'data' => [
+                                'type' => 'users',
+                                'id' => $user->id
+                            ],
+                            'links' => [
+                                'related' => url('/posts/' . $posts->first()->id . '/user')
                             ]
-                        ],
-                        'links' => [
-                            'self' => url('/posts/' . $posts->first()->id)
                         ]
+                    ],
+                    'links' => [
+                        'self' => url('/posts/' . $posts->first()->id)
                     ]
                 ]
             ],
-            'links' => [
-                'self' => url('/posts')
+            'included' => [
+                [
+                    'type' => 'users',
+                    'id' => $user->id,
+                    'attributes' => [
+                        'name' => $user->name
+                    ],
+                    'links' => [
+                        'self' => url('/users/' . $user->id)
+                    ]
+                ]
             ]
         ]);
     }

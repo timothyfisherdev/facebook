@@ -40,18 +40,6 @@ class CreatePostsTest extends TestCase
                 'attributes' => [
                     'body' => 'Testing body'
                 ],
-                'relationships' => [
-                    'user' => [
-                        'data' => [
-                            'attributes' => [
-                                'name' => $user->name
-                            ],
-                            'links' => [
-                                'self' => url('/users/' . $user->id)
-                            ]
-                        ]
-                    ]
-                ],
                 'links' => [
                     'self' => url('/posts/' . $posts->first()->id)
                 ]

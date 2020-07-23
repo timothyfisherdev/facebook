@@ -15,15 +15,13 @@ class User extends JsonResource
     public function toArray($request)
     {
         return [
-            'data' => [
-                'type' => 'users',
-                'id' => $this->id,
-                'attributes' => [
-                    'name' => $this->name
-                ],
-                'links' => [
-                    'self' => url('/users/' . $this->id)
-                ]
+            'type' => 'users',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name
+            ],
+            'links' => [
+                'self' => url('/users/' . $this->id)
             ]
         ];
     }

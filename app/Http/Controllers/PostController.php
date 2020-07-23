@@ -34,9 +34,7 @@ class PostController extends Controller
     		'data.attributes.body' => ''
     	]);
 
-    	$post = $request->user()->posts()
-            ->create($data['data']['attributes'])
-            ->load('user');
+    	$post = $request->user()->posts()->create($data['data']['attributes']);
 
     	return new PostResource($post);
     }

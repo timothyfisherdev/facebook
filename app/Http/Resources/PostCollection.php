@@ -21,4 +21,18 @@ class PostCollection extends ResourceCollection
             ]
         ];
     }
+
+    public function with($request)
+    {
+        $with = [];
+
+        if ($request->query('include')) {
+            $with['included'] = $this->collection->pluck('user')->unique()->values()
+                ->map(function ($user) {
+                    return new User($user);
+                });
+        }
+
+        return $with;
+    }
 }
