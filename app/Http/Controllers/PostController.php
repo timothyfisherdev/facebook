@@ -6,26 +6,18 @@ use Illuminate\Http\Request;
 use App\Post;
 use App\Http\Resources\Post as PostResource;
 use App\Http\Resources\PostCollection;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PostController extends Controller
 {
 	public function index(Request $request)
 	{
-        $posts = $request->user()->posts;
-
-        if ($include = $request->query('include')) {
-            if ($include !== 'user') {
-                return response()->json([
-                    'status' => '400',
-                    'title' => 'Invalid include parameter',
-                    'detail' => sprintf('Include parameter: %s is invalid.', $include)
-                ], 400);
-            }
-
-            $posts->load('user');
-        }
-
-		return new PostCollection($posts);
+        $posts = QueryBuilder::for(Post::class)
+            ->allowedIncludes(['user'])
+            ->where('user_id', auth()->id())
+            ->get();
+        
+        return new PostCollection($posts);
 	}
 
     public function store(Request $request)
@@ -34,7 +26,7 @@ class PostController extends Controller
     		'data.attributes.body' => ''
     	]);
 
-    	$post = $request->user()->posts()->create($data['data']['attributes']);
+    	$post = auth()->user()->posts()->create($data['data']['attributes']);
 
     	return new PostResource($post);
     }

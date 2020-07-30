@@ -2167,6 +2167,9 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var ramda__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ramda */ "./node_modules/ramda/es/index.js");
+/* harmony import */ var ramda_adjunct__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ramda-adjunct */ "./node_modules/ramda-adjunct/es/index.js");
+/* harmony import */ var json_api_merge__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-api-merge */ "./node_modules/json-api-merge/es/index.js");
 //
 //
 //
@@ -2175,6 +2178,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'UserProfile',
   data: function data() {
@@ -2186,8 +2192,8 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/users/' + this.$route.params.userId).then(function (res) {
-      _this.user = res.data;
+    axios.get('/api/users/' + this.$route.params.userId + '?include=posts').then(function (res) {
+      _this.user = Object(json_api_merge__WEBPACK_IMPORTED_MODULE_2__["default"])(res.data.included, res.data.data);
     })["catch"](function (err) {
       console.log('Unable to fetch user data.');
     })["finally"](function () {
@@ -57878,9 +57884,9 @@ var staticRenderFns = [
         _c("img", {
           staticClass: "object-cover w-full",
           attrs: {
-            src:
-              "https://mir-s3-cdn-cf.behance.net/project_modules/max_3840/be14d246175477.584a2e3e32918.jpg",
-            alt: ""
+            src: "https://via.placeholder.com/1000",
+            alt: "",
+            width: "1000"
           }
         })
       ])

@@ -41,10 +41,30 @@ class ViewProfilesTest extends TestCase
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $post = factory(Post::class)->create(['user_id' => $user->id]);
 
-        $response = $this->get('/api/users/' . $user->id . '/posts?include=user');
+        $response = $this->get('/api/users/' . $user->id . '?include=posts');
 
         $response->assertStatus(200)->assertJson([
             'data' => [
+                'type' => 'users',
+                'id' => $user->id,
+                'attributes' => [
+                    'name' => $user->name
+                ],
+                'links' => [
+                    'self' => url('/users/' . $user->id)
+                ],
+                'relationships' => [
+                    'posts' => [
+                        'data' => [
+                            [
+                                'type' => 'posts',
+                                'id' => $post->id
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'included' => [
                 [
                     'type' => 'posts',
                     'id' => $post->id,
@@ -53,28 +73,8 @@ class ViewProfilesTest extends TestCase
                         'image' => $post->image,
                         'posted_at' => $post->created_at->diffForHumans()
                     ],
-                    'relationships' => [
-                        'user' => [
-                            'data' => [
-                                'type' => 'users',
-                                'id' => $post->id
-                            ]
-                        ]
-                    ],
                     'links' => [
                         'self' => url('/posts/' . $post->id)
-                    ]
-                ]
-            ],
-            'included' => [
-                [
-                    'type' => 'users',
-                    'id' => $user->id,
-                    'attributes' => [
-                        'name' => $user->name
-                    ],
-                    'links' => [
-                        'self' => url('/users/' . $user->id)
                     ]
                 ]
             ]
