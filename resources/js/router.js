@@ -11,12 +11,18 @@ export default new VueRouter({
 		{
 			path: '/',
 			name: 'home',
-			component: NewsFeed
+			component: NewsFeed,
+			meta: {
+				title: 'News Feed'
+			}
 		},
 		{
 			path: '/users/:userId',
 			name: 'user.profile',
-			component: UserProfile
+			component: UserProfile,
+			meta: {
+				title: 'User Profile'
+			}
 		}
 	]
 });

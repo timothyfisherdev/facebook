@@ -24,6 +24,14 @@
 		},
 		mounted () {
 			this.$store.dispatch('getAuthUser');
+		},
+		created () {
+			this.$store.dispatch('setPageTitle', this.$route.meta.title);
+		},
+		watch: {
+			$route (to, from) {
+				this.$store.dispatch('setPageTitle', to.meta.title);
+			}
 		}
 	}
 </script>
