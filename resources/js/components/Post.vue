@@ -6,17 +6,17 @@
 					<img src="https://image.cnbcfm.com/api/v1/image/106330923-1578676182018gettyimages-1178141599.jpeg?v=1584633147&w=1400&h=950" alt="" class="w-8 h-8 object-cover rounded-full" />
 				</div>
 				<div class="ml-6">
-					<div class="text-sm font-bold">{{ post.relationships.user.data.attributes.name }}</div>
-					<div class="text-sm text-gray-600">{{ post.attributes.posted_at }}</div>
+					<div class="text-sm font-bold">{{ post.user.name }}</div>
+					<div class="text-sm text-gray-600">{{ post.posted_at }}</div>
 				</div>
 			</div>
 			<div class="mt-4">
-				<p>{{ post.attributes.body }}</p>
+				<p>{{ post.body }}</p>
 			</div>
 		</div>
 
-		<div v-if="post.attributes.image">
-			<img :src="post.attributes.image" alt="" class="w-full" />
+		<div v-if="post.image">
+			<img :src="post.image" alt="" class="w-full" />
 		</div>
 
 		<div class="px-4 pt-2 flex justify-between text-gray-700 text-sm">

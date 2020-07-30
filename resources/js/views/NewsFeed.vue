@@ -29,7 +29,12 @@
 		mounted () {
 			axios.get('/api/posts?include=user')
 				.then(res => {
-					this.posts = merge(res.data.included, res.data.data);
+					let posts = merge(res.data.included, res.data.data);
+					
+					this.posts = posts.map((post) => {
+						post.attributes.user = post.relationships.user.data.attributes;
+						return post.attributes;
+					});
 				}).catch(err => {
 					console.log('Unable to fetch posts.');
 				}).finally(() => {

@@ -2147,7 +2147,11 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     axios.get('/api/posts?include=user').then(function (res) {
-      _this.posts = Object(json_api_merge__WEBPACK_IMPORTED_MODULE_2__["default"])(res.data.included, res.data.data);
+      var posts = Object(json_api_merge__WEBPACK_IMPORTED_MODULE_2__["default"])(res.data.included, res.data.data);
+      _this.posts = posts.map(function (post) {
+        post.attributes.user = post.relationships.user.data.attributes;
+        return post.attributes;
+      });
     })["catch"](function (err) {
       console.log('Unable to fetch posts.');
     })["finally"](function () {
@@ -2170,6 +2174,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ramda__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ramda */ "./node_modules/ramda/es/index.js");
 /* harmony import */ var ramda_adjunct__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ramda-adjunct */ "./node_modules/ramda-adjunct/es/index.js");
 /* harmony import */ var json_api_merge__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-api-merge */ "./node_modules/json-api-merge/es/index.js");
+/* harmony import */ var _components_Post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/Post */ "./resources/js/components/Post.vue");
 //
 //
 //
@@ -2178,22 +2183,45 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'UserProfile',
+  components: {
+    Post: _components_Post__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
   data: function data() {
     return {
       loading: true,
-      user: null
+      user: null,
+      posts: null
     };
   },
   mounted: function mounted() {
     var _this = this;
 
     axios.get('/api/users/' + this.$route.params.userId + '?include=posts').then(function (res) {
-      _this.user = Object(json_api_merge__WEBPACK_IMPORTED_MODULE_2__["default"])(res.data.included, res.data.data);
+      var user = Object(json_api_merge__WEBPACK_IMPORTED_MODULE_2__["default"])(res.data.included, res.data.data);
+      _this.user = user.attributes;
+      _this.posts = user.relationships.posts.data.map(function (post) {
+        post.attributes.user = _this.user;
+        return post.attributes;
+      });
     })["catch"](function (err) {
       console.log('Unable to fetch user data.');
     })["finally"](function () {
@@ -57628,25 +57656,25 @@ var render = function() {
           _vm._v(" "),
           _c("div", { staticClass: "ml-6" }, [
             _c("div", { staticClass: "text-sm font-bold" }, [
-              _vm._v(_vm._s(_vm.post.relationships.user.data.attributes.name))
+              _vm._v(_vm._s(_vm.post.user.name))
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "text-sm text-gray-600" }, [
-              _vm._v(_vm._s(_vm.post.attributes.posted_at))
+              _vm._v(_vm._s(_vm.post.posted_at))
             ])
           ])
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "mt-4" }, [
-          _c("p", [_vm._v(_vm._s(_vm.post.attributes.body))])
+          _c("p", [_vm._v(_vm._s(_vm.post.body))])
         ])
       ]),
       _vm._v(" "),
-      _vm.post.attributes.image
+      _vm.post.image
         ? _c("div", [
             _c("img", {
               staticClass: "w-full",
-              attrs: { src: _vm.post.attributes.image, alt: "" }
+              attrs: { src: _vm.post.image, alt: "" }
             })
           ])
         : _vm._e(),
@@ -57872,24 +57900,68 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    { staticClass: "flex flex-col items-center" },
+    [
+      _c("div", { staticClass: "relative" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass:
+              "absolute bottom-0 -mb-8 ml-12 left-0 flex items-center"
+          },
+          [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("p", { staticClass: "text-2xl text-gray-100 ml-4" }, [
+              _vm._v(_vm._s(_vm.user.name))
+            ])
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _vm.loading
+        ? _c("p", [_vm._v("Loading posts...")])
+        : _vm._l(_vm.posts, function(post) {
+            return _c("Post", { key: post.id, attrs: { post: post } })
+          })
+    ],
+    2
+  )
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("div", { staticClass: "h-64 overflow-hidden" }, [
-        _c("img", {
-          staticClass: "object-cover w-full",
-          attrs: {
-            src: "https://via.placeholder.com/1000",
-            alt: "",
-            width: "1000"
-          }
-        })
-      ])
+    return _c("div", { staticClass: "w-100 h-64 overflow-hidden" }, [
+      _c("img", {
+        staticClass: "object-cover w-full",
+        attrs: {
+          src: "https://via.placeholder.com/1000",
+          alt: "",
+          width: "1000"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "w-32" }, [
+      _c("img", {
+        staticClass:
+          "w-32 h-32 object-cover border-4 border-gray-200 rounded-full shadow-lg",
+        attrs: {
+          src:
+            "https://image.cnbcfm.com/api/v1/image/106330923-1578676182018gettyimages-1178141599.jpeg?v=1584633147&w=1400&h=950",
+          alt: ""
+        }
+      })
     ])
   }
 ]
