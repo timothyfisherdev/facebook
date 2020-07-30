@@ -2133,6 +2133,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2182,6 +2184,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ramda_adjunct__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ramda-adjunct */ "./node_modules/ramda-adjunct/es/index.js");
 /* harmony import */ var json_api_merge__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-api-merge */ "./node_modules/json-api-merge/es/index.js");
 /* harmony import */ var _components_Post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/Post */ "./resources/js/components/Post.vue");
+//
+//
 //
 //
 //
@@ -57329,7 +57333,7 @@ var render = function() {
     "div",
     {
       staticClass:
-        "bg-white rounded shadow w-2/3 p-4 flex justify-between items-center"
+        "bg-white rounded shadow w-full p-4 flex justify-between items-center"
     },
     [
       _vm._m(0),
@@ -57662,7 +57666,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "bg-white rounded shadow w-2/3 mt-6 overflow-hidden" },
+    { staticClass: "bg-white rounded shadow mt-6 w-full overflow-hidden" },
     [
       _c("div", { staticClass: "flex flex-col p-4" }, [
         _c("div", { staticClass: "flex items-center" }, [
@@ -57877,28 +57881,30 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex flex-col items-center py-4" },
-    [
-      _c("AddPost"),
-      _vm._v(" "),
-      _vm.loading
-        ? _c("p", [_vm._v("Loading posts...")])
-        : _c("div", [
-            !_vm.posts.length
-              ? _c("p", [_vm._v("No posts to show.")])
-              : _c(
-                  "div",
-                  _vm._l(_vm.posts, function(post) {
-                    return _c("Post", { key: post.id, attrs: { post: post } })
-                  }),
-                  1
-                )
-          ])
-    ],
-    1
-  )
+  return _c("div", { staticClass: "flex flex-col items-center py-4" }, [
+    _c(
+      "div",
+      { staticClass: "w-2/3" },
+      [
+        _c("AddPost"),
+        _vm._v(" "),
+        _vm.loading
+          ? _c("p", [_vm._v("Loading posts...")])
+          : _c("div", [
+              !_vm.posts.length
+                ? _c("p", [_vm._v("No posts to show.")])
+                : _c(
+                    "div",
+                    _vm._l(_vm.posts, function(post) {
+                      return _c("Post", { key: post.id, attrs: { post: post } })
+                    }),
+                    1
+                  )
+            ])
+      ],
+      1
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -57941,19 +57947,21 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _vm.loading
-      ? _c("p", [_vm._v("Loading posts...")])
-      : _c("div", [
-          !_vm.posts.length
-            ? _c("p", [_vm._v("No posts to show.")])
-            : _c(
-                "div",
-                _vm._l(_vm.posts, function(post) {
-                  return _c("Post", { key: post.id, attrs: { post: post } })
-                }),
-                1
-              )
-        ])
+    _c("div", { staticClass: "w-2/3" }, [
+      _vm.loading
+        ? _c("p", [_vm._v("Loading posts...")])
+        : _c("div", [
+            !_vm.posts.length
+              ? _c("p", [_vm._v("No posts to show.")])
+              : _c(
+                  "div",
+                  _vm._l(_vm.posts, function(post) {
+                    return _c("Post", { key: post.id, attrs: { post: post } })
+                  }),
+                  1
+                )
+          ])
+    ])
   ])
 }
 var staticRenderFns = [

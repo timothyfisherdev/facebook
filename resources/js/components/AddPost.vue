@@ -1,5 +1,5 @@
 <template>
-	<div class="bg-white rounded shadow w-2/3 p-4 flex justify-between items-center">
+	<div class="bg-white rounded shadow w-full p-4 flex justify-between items-center">
 		<div>
 			<img src="https://image.cnbcfm.com/api/v1/image/106330923-1578676182018gettyimages-1178141599.jpeg?v=1584633147&w=1400&h=950" alt="" class="w-8 h-8 object-cover rounded-full" />
 		</div>

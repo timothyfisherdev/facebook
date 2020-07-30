@@ -14,13 +14,15 @@
 			</div>
 		</div>
 
-		<p v-if="loading">Loading posts...</p>
-
-		<div v-else>
-			<p v-if="! posts.length">No posts to show.</p>
+		<div class="w-2/3">
+			<p v-if="loading">Loading posts...</p>
 
 			<div v-else>
-				<Post v-for="post in posts" :key="post.id" :post="post" />
+				<p v-if="! posts.length">No posts to show.</p>
+
+				<div v-else>
+					<Post v-for="post in posts" :key="post.id" :post="post" />
+				</div>
 			</div>
 		</div>
 	</div>
