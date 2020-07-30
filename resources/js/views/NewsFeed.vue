@@ -3,7 +3,14 @@
 		<AddPost />
 
 		<p v-if="loading">Loading posts...</p>
-		<Post v-else v-for="post in posts" :key="post.id" :post="post" />
+
+		<div v-else>
+			<p v-if="! posts.length">No posts to show.</p>
+
+			<div v-else>
+				<Post v-for="post in posts" :key="post.id" :post="post" />
+			</div>
+		</div>
 	</div>
 </template>
 

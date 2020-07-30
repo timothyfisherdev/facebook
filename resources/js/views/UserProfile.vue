@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col items-center">
-		<div class="relative">
+		<div class="relative mb-8">
 			<div class="w-100 h-64 overflow-hidden">
 				<img src="https://via.placeholder.com/1000" alt="" class="object-cover w-full" width="1000" />
 			</div>
@@ -15,7 +15,14 @@
 		</div>
 
 		<p v-if="loading">Loading posts...</p>
-		<Post v-else v-for="post in posts" :key="post.id" :post="post" />
+
+		<div v-else>
+			<p v-if="! posts.length">No posts to show.</p>
+
+			<div v-else>
+				<Post v-for="post in posts" :key="post.id" :post="post" />
+			</div>
+		</div>
 	</div>
 </template>
 

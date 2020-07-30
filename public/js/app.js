@@ -2126,6 +2126,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2175,6 +2182,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var ramda_adjunct__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ramda-adjunct */ "./node_modules/ramda-adjunct/es/index.js");
 /* harmony import */ var json_api_merge__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-api-merge */ "./node_modules/json-api-merge/es/index.js");
 /* harmony import */ var _components_Post__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/Post */ "./resources/js/components/Post.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -57871,11 +57885,19 @@ var render = function() {
       _vm._v(" "),
       _vm.loading
         ? _c("p", [_vm._v("Loading posts...")])
-        : _vm._l(_vm.posts, function(post) {
-            return _c("Post", { key: post.id, attrs: { post: post } })
-          })
+        : _c("div", [
+            !_vm.posts.length
+              ? _c("p", [_vm._v("No posts to show.")])
+              : _c(
+                  "div",
+                  _vm._l(_vm.posts, function(post) {
+                    return _c("Post", { key: post.id, attrs: { post: post } })
+                  }),
+                  1
+                )
+          ])
     ],
-    2
+    1
   )
 }
 var staticRenderFns = []
@@ -57900,37 +57922,39 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "flex flex-col items-center" },
-    [
-      _c("div", { staticClass: "relative" }, [
-        _vm._m(0),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass:
-              "absolute bottom-0 -mb-8 ml-12 left-0 flex items-center"
-          },
-          [
-            _vm._m(1),
-            _vm._v(" "),
-            _c("p", { staticClass: "text-2xl text-gray-100 ml-4" }, [
-              _vm._v(_vm._s(_vm.user.name))
-            ])
-          ]
-        )
-      ]),
+  return _c("div", { staticClass: "flex flex-col items-center" }, [
+    _c("div", { staticClass: "relative mb-8" }, [
+      _vm._m(0),
       _vm._v(" "),
-      _vm.loading
-        ? _c("p", [_vm._v("Loading posts...")])
-        : _vm._l(_vm.posts, function(post) {
-            return _c("Post", { key: post.id, attrs: { post: post } })
-          })
-    ],
-    2
-  )
+      _c(
+        "div",
+        {
+          staticClass: "absolute bottom-0 -mb-8 ml-12 left-0 flex items-center"
+        },
+        [
+          _vm._m(1),
+          _vm._v(" "),
+          _c("p", { staticClass: "text-2xl text-gray-100 ml-4" }, [
+            _vm._v(_vm._s(_vm.user.name))
+          ])
+        ]
+      )
+    ]),
+    _vm._v(" "),
+    _vm.loading
+      ? _c("p", [_vm._v("Loading posts...")])
+      : _c("div", [
+          !_vm.posts.length
+            ? _c("p", [_vm._v("No posts to show.")])
+            : _c(
+                "div",
+                _vm._l(_vm.posts, function(post) {
+                  return _c("Post", { key: post.id, attrs: { post: post } })
+                }),
+                1
+              )
+        ])
+  ])
 }
 var staticRenderFns = [
   function() {
