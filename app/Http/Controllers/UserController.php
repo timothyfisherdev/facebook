@@ -9,6 +9,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
+	public function me(Request $request)
+	{
+		return $this->show(auth()->id(), $request);
+	}
+
     public function show(string $userId, Request $request)
     {
     	$user = QueryBuilder::for(User::class)
