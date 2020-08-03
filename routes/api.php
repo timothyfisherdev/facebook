@@ -20,6 +20,6 @@ Route::middleware('auth:api')->group(function () {
 	Route::apiResources([
 		'users' => 'UserController',
 		'posts' => 'PostController',
-		'users.posts' => 'UserPostController'
+		'friend-requests' => 'FriendRequestController'
 	]);
 });

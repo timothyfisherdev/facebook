@@ -27,21 +27,18 @@ class CreatePostsTest extends TestCase
             ]
         ]);
 
-        $posts = Post::all();
-
-        $this->assertCount(1, $posts);
-        $this->assertEquals($posts->first()->user_id, $user->id);
-        $this->assertEquals($posts->first()->body, 'Testing body');
+        $this->assertCount(1, $posts = Post::all());
+        $post = $posts->first();
 
         $response->assertStatus(201)->assertJson([
             'data' => [
                 'type' => 'posts',
-                'id' => $posts->first()->id,
+                'id' => $post->id,
                 'attributes' => [
                     'body' => 'Testing body'
                 ],
                 'links' => [
-                    'self' => url('/posts/' . $posts->first()->id)
+                    'self' => url('/posts/' . $post->id)
                 ]
             ]
         ]);

@@ -42,4 +42,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    public function friendRequests()
+    {
+        return $this->hasMany(FriendRequest::class, 'requester_id');
+    }
 }
