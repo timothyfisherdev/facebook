@@ -43,8 +43,8 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
-    public function friendRequests()
+    public function relationships()
     {
-        return $this->hasMany(FriendRequest::class, 'requester_id');
+        return $this->hasMany(UserRelationship::class, 'requester_id');
     }
 }

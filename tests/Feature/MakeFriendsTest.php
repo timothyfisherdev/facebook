@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\User;
-use App\FriendRequest;
+use App\UserRelationship;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -19,28 +19,29 @@ class MakeFriendsTest extends TestCase
         $this->actingAs($user1 = factory(User::class)->create(), 'api');
         $user2 = factory(User::class)->create();
 
-        $response = $this->post('/api/friend-requests', [
+        $response = $this->post("/api/users/{$user1->id}/relationships", [
             'data' => [
-                'type' => 'friend-requests',
+                'type' => 'user-relationships',
                 'attributes' => [
-                    'user_id' => $user2->id 
+                    'related_user_id' => $user2->id
                 ]
             ]
         ]);
 
-        $this->assertCount(1, $friendRequests = FriendRequest::all());
-        $friendRequest = $friendRequests->first();
+        $this->assertCount(1, $relationships = UserRelationship::all());
+        $relationship = $relationships->first();
 
         $response->assertStatus(201)->assertJson([
             'data' => [
-                'type' => 'friend-requests',
-                'id' => $friendRequest->id,
+                'type' => 'user-relationships',
+                'id' => $relationship->id,
                 'attributes' => [
                     'requester_id' => $user1->id,
-                    'requested_id' => $user2->id
+                    'requested_id' => $user2->id,
+                    'type' => 'pending'
                 ],
                 'links' => [
-                    'self' => url('/friend-requests/' . $friendRequest->id)
+                    'self' => url("/users/{$user1->id}/relationships/{$relationship->id}")
                 ]
             ]
         ]);
@@ -51,11 +52,11 @@ class MakeFriendsTest extends TestCase
     {
         $this->actingAs($user = factory(User::class)->create(), 'api');
         
-        $response = $this->post('/api/friend-requests', [
+        $response = $this->post("/api/users/{$user->id}/relationships", [
             'data' => [
-                'type' => 'friend-requests',
+                'type' => 'user-relationships',
                 'attributes' => [
-                    'user_id' => $invalid_user_id = 123
+                    'related_user_id' => $invalid_user_id = 123
                 ]
             ]
         ]);
@@ -65,6 +66,51 @@ class MakeFriendsTest extends TestCase
                 'status' => '404',
                 'title' => 'Requested User Not Found',
                 'detail' => 'Unable to find the requested user.'
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function users_can_accept_friend_requests()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs($user1 = factory(User::class)->create(), 'api');
+        $user2 = factory(User::class)->create();
+
+        $this->post("/api/users/{$user1->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => $user2->id
+                ]
+            ]
+        ]);
+
+        $relationship = UserRelationship::first();
+
+        $response = $this->actingAs($user2, 'api')
+            ->patch("/api/users/{$user1->id}/relationships/{$relationship->id}", [
+                'data' => [
+                    'type' => 'user-relationships',
+                    'id' => $relationship->id,
+                    'attributes' => [
+                        'type' => 'friends'
+                    ]
+                ]
+            ]);
+
+        $response->assertStatus(200)->assertJson([
+            'data' => [
+                'type' => 'user-relationships',
+                'id' => $relationship->id,
+                'attributes' => [
+                    'requester_id' => $user1->id,
+                    'requested_id' => $user2->id,
+                    'type' => 'friends'
+                ],
+                'links' => [
+                    'self' => url("/users/{$user1->id}/relationships/{$relationship->id}")
+                ]
             ]
         ]);
     }

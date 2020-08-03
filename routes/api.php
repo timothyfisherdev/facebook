@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
 	Route::get('/me', 'UserController@me');
-	
+
 	Route::apiResources([
 		'users' => 'UserController',
 		'posts' => 'PostController',
-		'friend-requests' => 'FriendRequestController'
+		'users.relationships' => 'UserRelationshipController'
 	]);
 });
