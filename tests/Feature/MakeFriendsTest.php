@@ -73,7 +73,6 @@ class MakeFriendsTest extends TestCase
     /** @test */
     public function users_can_accept_friend_requests()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user1 = factory(User::class)->create(), 'api');
         $user2 = factory(User::class)->create();
 
@@ -89,7 +88,7 @@ class MakeFriendsTest extends TestCase
         $relationship = UserRelationship::first();
 
         $response = $this->actingAs($user2, 'api')
-            ->patch("/api/users/{$user1->id}/relationships/{$relationship->id}", [
+            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
                 'data' => [
                     'type' => 'user-relationships',
                     'id' => $relationship->id,
@@ -111,6 +110,42 @@ class MakeFriendsTest extends TestCase
                 'links' => [
                     'self' => url("/users/{$user1->id}/relationships/{$relationship->id}")
                 ]
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function only_the_recipient_can_accept_a_friend_request()
+    {
+        $this->actingAs($user1 = factory(User::class)->create(), 'api');
+        $user2 = factory(User::class)->create();
+
+        $this->post("/api/users/{$user1->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => $user2->id
+                ]
+            ]
+        ]);
+
+        $relationship = UserRelationship::first();
+
+        $response = $this->actingAs($user3 = factory(User::class)->create())
+            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
+                'data' => [
+                    'type' => 'user-relationships',
+                    'id' => $relationship->id,
+                    'attributes' => [
+                        'type' => 'friends'
+                    ]
+                ]
+            ]);
+
+        $response->assertStatus(403)->assertJson([
+            'errors' => [
+                'status' => '403',
+                'title' => 'Unauthorized Request'
             ]
         ]);
     }
