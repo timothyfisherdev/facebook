@@ -73,6 +73,7 @@ class MakeFriendsTest extends TestCase
     /** @test */
     public function users_can_accept_friend_requests()
     {
+        $this->withoutExceptionHandling();
         $this->actingAs($user1 = factory(User::class)->create(), 'api');
         $user2 = factory(User::class)->create();
 
@@ -131,7 +132,7 @@ class MakeFriendsTest extends TestCase
 
         $relationship = UserRelationship::first();
 
-        $response = $this->actingAs($user3 = factory(User::class)->create())
+        $response = $this->actingAs($user3 = factory(User::class)->create(), 'api')
             ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
                 'data' => [
                     'type' => 'user-relationships',

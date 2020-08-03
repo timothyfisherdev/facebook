@@ -16,7 +16,6 @@ class UserRelationshipPolicy
      * and that the recipient of the relationship request
      * is the only one that can make updates to it.
      * 
-     * @param  User             $authUser      Current auth user.
      * @param  UserRelationship $relationship  The relationship.
      * @param  User             $recipientUser The user passed from the API call.
      * 
@@ -24,7 +23,7 @@ class UserRelationshipPolicy
      */
     public function update(User $authUser, UserRelationship $relationship, User $recipientUser)
     {
-        return $authUser->id === $recipientUser->id
+        return $authUser->is($recipientUser)
             && $relationship->requested_id === $recipientUser->id;
     }
 }
