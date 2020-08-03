@@ -45,4 +45,27 @@ class MakeFriendsTest extends TestCase
             ]
         ]);
     }
+
+    /** @test */
+    public function only_valid_users_can_be_friend_requested()
+    {
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+        
+        $response = $this->post('/api/friend-requests', [
+            'data' => [
+                'type' => 'friend-requests',
+                'attributes' => [
+                    'user_id' => $invalid_user_id = 123
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(404)->assertJson([
+            'errors' => [
+                'status' => '404',
+                'title' => 'Requested User Not Found',
+                'detail' => 'Unable to find the requested user.'
+            ]
+        ]);
+    }
 }
