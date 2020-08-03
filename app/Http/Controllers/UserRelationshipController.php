@@ -5,17 +5,18 @@ namespace App\Http\Controllers;
 use App\User;
 use App\UserRelationship;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreUserRelationship;
-use App\Exceptions\UnauthorizedRequestException;
-use Illuminate\Auth\Access\AuthorizationException;
 use App\Http\Resources\UserRelationship as UserRelationshipResource;
 
 class UserRelationshipController extends Controller
 {
-    public function store(User $user, StoreUserRelationship $request)
+    public function store(User $user, Request $request)
     {
+        $data = $request->validate([
+            'data.attributes.related_user_id' => 'required|exists:users,id'
+        ]);
+
     	$relationship = $user->relationships()->create([
-    		'requested_id' => $request->validated()['data']['attributes']['related_user_id'],
+    		'requested_id' => $data['data']['attributes']['related_user_id'],
     		'type' => 'pending'
     	]);
 
@@ -24,14 +25,10 @@ class UserRelationshipController extends Controller
 
     public function update(User $user, UserRelationship $relationship, Request $request)
     {
-        try {
-            $this->authorize('update', [$relationship, $user]);
-        } catch (AuthorizationException $e) {
-            throw new UnauthorizedRequestException($e);
-        }
+        $this->authorize('update', [$relationship, $user]);
 
     	$data = $request->validate([
-    		'data.attributes.type' => ''
+    		'data.attributes.type' => 'required'
     	]);
 
     	$relationship->update([

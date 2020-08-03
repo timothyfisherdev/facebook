@@ -15,7 +15,6 @@ class MakeFriendsTest extends TestCase
     /** @test */
     public function a_user_can_send_a_friend_request()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user1 = factory(User::class)->create(), 'api');
         $user2 = factory(User::class)->create();
 
@@ -47,37 +46,37 @@ class MakeFriendsTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function a_user_cannot_submit_multiple_friend_requests_to_the_same_person()
-    {
-        $this->actingAs($user1 = factory(User::class)->create(), 'api');
-        $user2 = factory(User::class)->create();
+    // /** @test */
+    // public function a_user_cannot_submit_multiple_friend_requests_to_the_same_person()
+    // {
+    //     $this->actingAs($user1 = factory(User::class)->create(), 'api');
+    //     $user2 = factory(User::class)->create();
 
-        $this->post("/api/users/{$user1->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
-                ]
-            ]
-        ]);
+    //     $this->post("/api/users/{$user1->id}/relationships", [
+    //         'data' => [
+    //             'type' => 'user-relationships',
+    //             'attributes' => [
+    //                 'related_user_id' => $user2->id
+    //             ]
+    //         ]
+    //     ]);
 
-        $response = $this->post("/api/users/{$user1->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
-                ]
-            ]
-        ]);
+    //     $response = $this->post("/api/users/{$user1->id}/relationships", [
+    //         'data' => [
+    //             'type' => 'user-relationships',
+    //             'attributes' => [
+    //                 'related_user_id' => $user2->id
+    //             ]
+    //         ]
+    //     ]);
 
-        $response->assertStatus(409)->assertJson([
-            'errors' => [
-                'status' => '409',
-                'title' => 'Relationship Already Exists'
-            ]
-        ]);
-    }
+    //     $response->assertStatus(409)->assertJson([
+    //         'errors' => [
+    //             'status' => '409',
+    //             'title' => 'Invalid User Relationship'
+    //         ]
+    //     ]);
+    // }
 
     // /** @test */
     // public function a_user_cannot_friend_request_themselves()
@@ -94,12 +93,7 @@ class MakeFriendsTest extends TestCase
     //         ]
     //     ]);
 
-    //     $response->assertStatus(409)->assertJson([
-    //         'errors' => [
-    //             'status' => '409',
-    //             'title' => 'Invalid Relationship'
-    //         ]
-    //     ]);
+    //     $response->assertStatus(409);
     // }
 
     /** @test */
@@ -116,11 +110,11 @@ class MakeFriendsTest extends TestCase
             ]
         ]);
 
-        $response->assertStatus(404)->assertJson([
+        $response->assertStatus(422)->assertJson([
             'errors' => [
-                'status' => '404',
-                'title' => 'Requested User Not Found',
-                'detail' => 'Unable to find the requested user.'
+                'status' => '422',
+                'title' => 'Validation Error',
+                'detail' => 'Your request is malformed or missing fields.'
             ]
         ]);
     }
@@ -128,7 +122,6 @@ class MakeFriendsTest extends TestCase
     /** @test */
     public function users_can_accept_friend_requests()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user1 = factory(User::class)->create(), 'api');
         $user2 = factory(User::class)->create();
 
@@ -198,10 +191,71 @@ class MakeFriendsTest extends TestCase
                 ]
             ]);
 
-        $response->assertStatus(403)->assertJson([
+        $response->assertStatus(401)->assertJson([
             'errors' => [
-                'status' => '403',
-                'title' => 'Unauthorized Request'
+                'status' => '401',
+                'title' => 'Authorization Error',
+                'detail' => 'Your request was not authorized.'
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function a_related_user_is_required_to_make_a_friend_request()
+    {
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $response = $this->post("/api/users/{$user->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => ''
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'status' => '422',
+                'title' => 'Validation Error',
+                'detail' => 'Your request is malformed or missing fields.'
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function a_relationship_type_is_required_to_accept_a_friend_request()
+    {
+        $this->actingAs($user1 = factory(User::class)->create(), 'api');
+        $user2 = factory(User::class)->create();
+
+        $this->post("/api/users/{$user1->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => $user2->id
+                ]
+            ]
+        ]);
+
+        $relationship = UserRelationship::first();
+
+        $response = $this->actingAs($user2, 'api')
+            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
+                'data' => [
+                    'type' => 'user-relationships',
+                    'id' => $relationship->id,
+                    'attributes' => [
+                        'type' => ''
+                    ]
+                ]
+            ]);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'status' => '422',
+                'title' => 'Validation Error',
+                'detail' => 'Your request is malformed or missing fields.'
             ]
         ]);
     }

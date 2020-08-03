@@ -15,7 +15,6 @@ class ReadPostsTest extends TestCase
     /** @test */
     public function a_user_can_read_their_own_posts()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $posts = factory(Post::class, 2)->create(['user_id' => $user->id]);
 
@@ -88,7 +87,6 @@ class ReadPostsTest extends TestCase
     /** @test */
     public function a_user_cannot_read_others_posts()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $posts = factory(Post::class, 2)->create();
 

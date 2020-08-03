@@ -15,7 +15,6 @@ class ViewProfilesTest extends TestCase
     /** @test */
     public function a_user_can_view_user_profiles()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
 
         $response = $this->get('/api/users/' . $user->id);
@@ -37,7 +36,6 @@ class ViewProfilesTest extends TestCase
     /** @test */
     public function a_user_profile_shows_the_profile_owners_posts()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
         $post = factory(Post::class)->create(['user_id' => $user->id]);
 

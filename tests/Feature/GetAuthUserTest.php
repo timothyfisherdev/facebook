@@ -14,7 +14,6 @@ class GetAuthUserTest extends TestCase
     /** @test */
     public function a_valid_client_can_retrieve_the_currently_authenticated_api_user()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs($user = factory(User::class)->create(), 'api');
 
         $response = $this->get('/api/me');
