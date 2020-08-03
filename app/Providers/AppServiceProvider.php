@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Laravel\Passport\Passport;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('valid_user_relationship', function ($attribute, $value, $parameters, $validator) {
+            return \App\UserRelationship::where('requester_id', auth()->id())
+                ->where('requested_id', $validator->getData()['data']['attributes']['related_user_id'])->get()->isEmpty();
+        });
     }
 }

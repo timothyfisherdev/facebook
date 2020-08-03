@@ -27,7 +27,7 @@ class StoreUserRelationship extends FormRequest
     public function rules()
     {
         return [
-            'data.attributes.related_user_id' => 'exists:users,id'
+            'data.attributes.related_user_id' => 'exists:users,id|valid_user_relationship'
         ];
     }
 
@@ -39,7 +39,8 @@ class StoreUserRelationship extends FormRequest
     public function messages()
     {
         return [
-            'data.attributes.related_user_id.exists' => 'Unable to find the requested user.'
+            'data.attributes.related_user_id.exists' => 'Unable to find the requested user.',
+            'data.attributes.related_user_id.valid_user_relationship' => 'Relationship already exists'
         ];
     }
 
@@ -60,6 +61,10 @@ class StoreUserRelationship extends FormRequest
             $status = '404';
             $title = 'Requested User Not Found';
             $detail = $this->messages()['data.attributes.related_user_id.exists'];
+        } elseif (isset($failedRules['data.attributes.related_user_id']['ValidUserRelationship'])) {
+            $status = '409';
+            $title = 'Relationship Already Exists';
+            $detail = '';
         }
         
         throw new ValidationException($validator, new JsonResponse([
@@ -68,6 +73,6 @@ class StoreUserRelationship extends FormRequest
                 'title' => $title,
                 'detail' => $detail
             ]
-        ], 404));
+        ], $status));
     }
 }

@@ -48,6 +48,61 @@ class MakeFriendsTest extends TestCase
     }
 
     /** @test */
+    public function a_user_cannot_submit_multiple_friend_requests_to_the_same_person()
+    {
+        $this->actingAs($user1 = factory(User::class)->create(), 'api');
+        $user2 = factory(User::class)->create();
+
+        $this->post("/api/users/{$user1->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => $user2->id
+                ]
+            ]
+        ]);
+
+        $response = $this->post("/api/users/{$user1->id}/relationships", [
+            'data' => [
+                'type' => 'user-relationships',
+                'attributes' => [
+                    'related_user_id' => $user2->id
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(409)->assertJson([
+            'errors' => [
+                'status' => '409',
+                'title' => 'Relationship Already Exists'
+            ]
+        ]);
+    }
+
+    // /** @test */
+    // public function a_user_cannot_friend_request_themselves()
+    // {
+    //     $this->withoutExceptionHandling();
+    //     $this->actingAs($user = factory(User::class)->create(), 'api');
+
+    //     $response = $this->post("/api/users/{$user->id}/relationships", [
+    //         'data' => [
+    //             'type' => 'user-relationships',
+    //             'attributes' => [
+    //                 'related_user_id' => $user->id
+    //             ]
+    //         ]
+    //     ]);
+
+    //     $response->assertStatus(409)->assertJson([
+    //         'errors' => [
+    //             'status' => '409',
+    //             'title' => 'Invalid Relationship'
+    //         ]
+    //     ]);
+    // }
+
+    /** @test */
     public function only_valid_users_can_be_friend_requested()
     {
         $this->actingAs($user = factory(User::class)->create(), 'api');
