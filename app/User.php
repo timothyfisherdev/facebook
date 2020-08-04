@@ -45,6 +45,11 @@ class User extends Authenticatable
 
     public function relationships()
     {
-        return $this->hasMany(UserRelationship::class, 'requester_id');
+        return $this->belongsToMany(
+            User::class,
+            'user_relationships',
+            'requester_id',
+            'addressee_id'
+        );
     }
 }

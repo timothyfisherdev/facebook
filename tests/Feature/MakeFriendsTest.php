@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\User;
-use App\UserRelationship;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -15,39 +14,124 @@ class MakeFriendsTest extends TestCase
     /** @test */
     public function a_user_can_send_a_friend_request()
     {
-        $this->actingAs($user1 = factory(User::class)->create(), 'api');
-        $user2 = factory(User::class)->create();
+        $requester = factory(User::class)->create();
+        $addressee = factory(User::class)->create();
+        
+        $this->actingAs($requester, 'api');
 
-        $response = $this->post("/api/users/{$user1->id}/relationships", [
+        $this->post("/api/users/{$requester->id}/relationships/users", [
             'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
+                [
+                    'type' => 'users',
+                    'id' => $addressee->id
+                ]
+            ]
+        ])->assertNoContent();
+
+        $this->assertTrue($requester->relationships->contains($addressee));
+    }
+
+    /** @test */
+    public function a_user_cannot_send_multiple_friend_requests_to_the_same_person()
+    {
+        $requester = factory(User::class)->create();
+        $addressee = factory(User::class)->create();
+        
+        $this->actingAs($requester, 'api');
+
+        $this->post("/api/users/{$requester->id}/relationships/users", [
+            'data' => [
+                [
+                    'type' => 'users',
+                    'id' => $addressee->id
                 ]
             ]
         ]);
 
-        $this->assertCount(1, $relationships = UserRelationship::all());
-        $relationship = $relationships->first();
-
-        $response->assertStatus(201)->assertJson([
+        $this->post("/api/users/{$requester->id}/relationships/users", [
             'data' => [
-                'type' => 'user-relationships',
-                'id' => $relationship->id,
-                'attributes' => [
-                    'requester_id' => $user1->id,
-                    'requested_id' => $user2->id,
-                    'type' => 'pending'
-                ],
-                'links' => [
-                    'self' => url("/users/{$user1->id}/relationships/{$relationship->id}")
+                [
+                    'type' => 'users',
+                    'id' => $addressee->id
                 ]
+            ]
+        ])->assertNoContent();
+
+        $this->assertCount(1, $requester->relationships);
+    }
+
+    /** @test */
+    public function a_user_cannot_friend_request_themselves()
+    {
+        $requester = factory(User::class)->create();
+        
+        $this->actingAs($requester, 'api');
+
+        $response = $this->post("/api/users/{$requester->id}/relationships/users", [
+            'data' => [
+                [
+                    'type' => 'users',
+                    'id' => $requester->id
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'status' => '422',
+                'title' => 'Validation Error',
+                'detail' => 'Your request is malformed or missing fields.'
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function only_valid_users_can_be_friend_requested()
+    {
+        $requester = factory(User::class)->create();
+
+        $this->actingAs($requester, 'api');
+        
+        $response = $this->post("/api/users/{$requester->id}/relationships/users", [
+            'data' => [
+                [
+                    'type' => 'users',
+                    'id' => 123
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(422)->assertJson([
+            'errors' => [
+                'status' => '422',
+                'title' => 'Validation Error',
+                'detail' => 'Your request is malformed or missing fields.'
             ]
         ]);
     }
 
     // /** @test */
-    // public function a_user_cannot_submit_multiple_friend_requests_to_the_same_person()
+    // public function users_can_accept_friend_requests()
+    // {
+    //     $requester = factory(User::class)->create();
+    //     $addressee = factory(User::class)->create();
+        
+    //     $this->actingAs($requester, 'api');
+
+    //     $this->post("/api/users/{$requester->id}/relationships/users", [
+    //         'data' => [
+    //             'type' => 'users',
+    //             'id' => $addressee->id
+    //         ]
+    //     ]);
+
+    //     $this->actingAs($addressee, 'api');
+
+    //     $response = $this->patch("/api/users/{$adressee->id}/relationships/user", []);
+    // }
+
+    // /** @test */
+    // public function only_the_recipient_can_accept_a_friend_request()
     // {
     //     $this->actingAs($user1 = factory(User::class)->create(), 'api');
     //     $user2 = factory(User::class)->create();
@@ -61,195 +145,43 @@ class MakeFriendsTest extends TestCase
     //         ]
     //     ]);
 
-    //     $response = $this->post("/api/users/{$user1->id}/relationships", [
-    //         'data' => [
-    //             'type' => 'user-relationships',
-    //             'attributes' => [
-    //                 'related_user_id' => $user2->id
-    //             ]
-    //         ]
-    //     ]);
+    //     $relationship = UserRelationship::first();
 
-    //     $response->assertStatus(409)->assertJson([
+    //     $response = $this->actingAs($user3 = factory(User::class)->create(), 'api')
+    //         ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
+    //             'data' => [
+    //                 'type' => 'user-relationships',
+    //                 'id' => $relationship->id,
+    //                 'attributes' => [
+    //                     'type' => 'friends'
+    //                 ]
+    //             ]
+    //         ]);
+
+    //     $response->assertStatus(401)->assertJson([
     //         'errors' => [
-    //             'status' => '409',
-    //             'title' => 'Invalid User Relationship'
+    //             'status' => '401',
+    //             'title' => 'Authorization Error',
+    //             'detail' => 'Your request was not authorized.'
     //         ]
     //     ]);
-    // }
-
-    // /** @test */
-    // public function a_user_cannot_friend_request_themselves()
-    // {
-    //     $this->withoutExceptionHandling();
-    //     $this->actingAs($user = factory(User::class)->create(), 'api');
-
-    //     $response = $this->post("/api/users/{$user->id}/relationships", [
-    //         'data' => [
-    //             'type' => 'user-relationships',
-    //             'attributes' => [
-    //                 'related_user_id' => $user->id
-    //             ]
-    //         ]
-    //     ]);
-
-    //     $response->assertStatus(409);
     // }
 
     /** @test */
-    public function only_valid_users_can_be_friend_requested()
+    public function an_addressee_is_required_to_make_a_friend_request()
     {
-        $this->actingAs($user = factory(User::class)->create(), 'api');
+        $requester = factory(User::class)->create();
         
-        $response = $this->post("/api/users/{$user->id}/relationships", [
+        $this->actingAs($requester, 'api');
+
+        $response = $this->post("/api/users/{$requester->id}/relationships/users", [
             'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $invalid_user_id = 123
+                [
+                    'type' => 'users',
+                    'id' => ''
                 ]
             ]
         ]);
-
-        $response->assertStatus(422)->assertJson([
-            'errors' => [
-                'status' => '422',
-                'title' => 'Validation Error',
-                'detail' => 'Your request is malformed or missing fields.'
-            ]
-        ]);
-    }
-
-    /** @test */
-    public function users_can_accept_friend_requests()
-    {
-        $this->actingAs($user1 = factory(User::class)->create(), 'api');
-        $user2 = factory(User::class)->create();
-
-        $this->post("/api/users/{$user1->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
-                ]
-            ]
-        ]);
-
-        $relationship = UserRelationship::first();
-
-        $response = $this->actingAs($user2, 'api')
-            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
-                'data' => [
-                    'type' => 'user-relationships',
-                    'id' => $relationship->id,
-                    'attributes' => [
-                        'type' => 'friends'
-                    ]
-                ]
-            ]);
-
-        $response->assertStatus(200)->assertJson([
-            'data' => [
-                'type' => 'user-relationships',
-                'id' => $relationship->id,
-                'attributes' => [
-                    'requester_id' => $user1->id,
-                    'requested_id' => $user2->id,
-                    'type' => 'friends'
-                ],
-                'links' => [
-                    'self' => url("/users/{$user1->id}/relationships/{$relationship->id}")
-                ]
-            ]
-        ]);
-    }
-
-    /** @test */
-    public function only_the_recipient_can_accept_a_friend_request()
-    {
-        $this->actingAs($user1 = factory(User::class)->create(), 'api');
-        $user2 = factory(User::class)->create();
-
-        $this->post("/api/users/{$user1->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
-                ]
-            ]
-        ]);
-
-        $relationship = UserRelationship::first();
-
-        $response = $this->actingAs($user3 = factory(User::class)->create(), 'api')
-            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
-                'data' => [
-                    'type' => 'user-relationships',
-                    'id' => $relationship->id,
-                    'attributes' => [
-                        'type' => 'friends'
-                    ]
-                ]
-            ]);
-
-        $response->assertStatus(401)->assertJson([
-            'errors' => [
-                'status' => '401',
-                'title' => 'Authorization Error',
-                'detail' => 'Your request was not authorized.'
-            ]
-        ]);
-    }
-
-    /** @test */
-    public function a_related_user_is_required_to_make_a_friend_request()
-    {
-        $this->actingAs($user = factory(User::class)->create(), 'api');
-
-        $response = $this->post("/api/users/{$user->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => ''
-                ]
-            ]
-        ]);
-
-        $response->assertStatus(422)->assertJson([
-            'errors' => [
-                'status' => '422',
-                'title' => 'Validation Error',
-                'detail' => 'Your request is malformed or missing fields.'
-            ]
-        ]);
-    }
-
-    /** @test */
-    public function a_relationship_type_is_required_to_accept_a_friend_request()
-    {
-        $this->actingAs($user1 = factory(User::class)->create(), 'api');
-        $user2 = factory(User::class)->create();
-
-        $this->post("/api/users/{$user1->id}/relationships", [
-            'data' => [
-                'type' => 'user-relationships',
-                'attributes' => [
-                    'related_user_id' => $user2->id
-                ]
-            ]
-        ]);
-
-        $relationship = UserRelationship::first();
-
-        $response = $this->actingAs($user2, 'api')
-            ->patch("/api/users/{$user2->id}/relationships/{$relationship->id}", [
-                'data' => [
-                    'type' => 'user-relationships',
-                    'id' => $relationship->id,
-                    'attributes' => [
-                        'type' => ''
-                    ]
-                ]
-            ]);
 
         $response->assertStatus(422)->assertJson([
             'errors' => [

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\UserRelationship;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserRelationship as UserRelationshipResource;
 
@@ -12,15 +12,12 @@ class UserRelationshipController extends Controller
     public function store(User $user, Request $request)
     {
         $data = $request->validate([
-            'data.attributes.related_user_id' => 'required|exists:users,id'
+            'data.*.id' => 'required|distinct|exists:users,id|not_in:' . $user->id
         ]);
 
-    	$relationship = $user->relationships()->create([
-    		'requested_id' => $data['data']['attributes']['related_user_id'],
-    		'type' => 'pending'
-    	]);
+        $user->relationships()->syncWithoutDetaching(Arr::pluck($data['data'], 'id'));
 
-    	return new UserRelationshipResource($relationship);
+    	return response()->noContent();
     }
 
     public function update(User $user, UserRelationship $relationship, Request $request)

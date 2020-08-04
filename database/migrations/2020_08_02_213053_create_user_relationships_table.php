@@ -14,11 +14,22 @@ class CreateUserRelationshipsTable extends Migration
     public function up()
     {
         Schema::create('user_relationships', function (Blueprint $table) {
-            $table->id(); 
             $table->unsignedBigInteger('requester_id');
-            $table->unsignedBigInteger('requested_id');
-            $table->string('type');
+            $table->unsignedBigInteger('addressee_id');
             $table->timestamps();
+
+            $table->foreign('requester_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+            
+            $table->foreign('addressee_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+
+            // Composite key
+            $table->primary(['requester_id', 'addressee_id']);
         });
     }
 

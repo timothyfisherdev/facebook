@@ -16,10 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
 	Route::get('/me', 'UserController@me');
+	Route::get('/users/{user}', 'UserController@show');
+	Route::post('/users/{user}/relationships/users', 'UserRelationshipController@store');
 
-	Route::apiResources([
-		'users' => 'UserController',
-		'posts' => 'PostController',
-		'users.relationships' => 'UserRelationshipController'
-	]);
+	Route::get('/posts', 'PostController@index');
+	Route::post('/posts', 'PostController@store');
 });
