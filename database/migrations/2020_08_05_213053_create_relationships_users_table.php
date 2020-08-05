@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserRelationshipsTable extends Migration
+class CreateRelationshipsUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateUserRelationshipsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_relationships', function (Blueprint $table) {
+        Schema::create('relationships_users', function (Blueprint $table) {
             $table->unsignedBigInteger('requester_id');
             $table->unsignedBigInteger('addressee_id');
+            $table->char('status_code', 1);
             $table->timestamps();
 
             $table->foreign('requester_id')
@@ -26,6 +27,11 @@ class CreateUserRelationshipsTable extends Migration
             $table->foreign('addressee_id')
                 ->references('id')
                 ->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('status_code')
+                ->references('code')
+                ->on('relationship_status_codes')
                 ->onDelete('cascade');
 
             // Composite key
@@ -40,6 +46,6 @@ class CreateUserRelationshipsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_relationships');
+        Schema::dropIfExists('relationships_users');
     }
 }

@@ -47,9 +47,18 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(
             User::class,
-            'user_relationships',
+            'relationships_users',
             'requester_id',
             'addressee_id'
-        );
+        )->withPivot('status_code');
+    }
+
+    public function createRelationships(array $userIds)
+    {
+        $userIds = array_flip($userIds);
+
+        data_set($userIds, '*.status_code', 'R');
+
+        $this->relationships()->syncWithoutDetaching($userIds);
     }
 }

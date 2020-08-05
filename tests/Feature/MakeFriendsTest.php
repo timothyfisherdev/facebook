@@ -11,6 +11,13 @@ class MakeFriendsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp() : void
+    {
+        parent::setUp();
+
+        $this->seed('RelationshipStatusCodesSeeder');
+    }
+
     /** @test */
     public function a_user_can_send_a_friend_request()
     {
@@ -28,7 +35,35 @@ class MakeFriendsTest extends TestCase
             ]
         ])->assertNoContent();
 
-        $this->assertTrue($requester->relationships->contains($addressee));
+        $this->assertCount(1, $relationships = $requester->relationships);
+        $this->assertTrue($relationships->contains($addressee));
+        $this->assertEquals($relationships->first()->pivot->status_code, 'R');
+    }
+
+    /** @test */
+    public function a_user_cannot_send_a_friend_request_on_someone_elses_behalf()
+    {
+        $innocentUser = factory(User::class)->create();
+        $maliciousUser = factory(User::class)->create();
+
+        $this->actingAs($maliciousUser, 'api');
+
+        $response = $this->post("/api/users/{$innocentUser->id}/relationships/users", [
+            'data' => [
+                [
+                    'type' => 'users',
+                    'id' => $maliciousUser->id
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(401)->assertJson([
+            'errors' => [
+                'status' => '401',
+                'title' => 'Authorization Error',
+                'detail' => 'Your request was not authorized.'
+            ]
+        ]);
     }
 
     /** @test */
@@ -110,7 +145,7 @@ class MakeFriendsTest extends TestCase
         ]);
     }
 
-    // /** @test */
+    /** @test */
     // public function users_can_accept_friend_requests()
     // {
     //     $requester = factory(User::class)->create();
@@ -131,7 +166,7 @@ class MakeFriendsTest extends TestCase
     // }
 
     // /** @test */
-    // public function only_the_recipient_can_accept_a_friend_request()
+    // public function only_the_addressee_can_accept_a_friend_request()
     // {
     //     $this->actingAs($user1 = factory(User::class)->create(), 'api');
     //     $user2 = factory(User::class)->create();
