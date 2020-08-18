@@ -14,11 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->group(function () {
-	Route::get('/me', 'UserController@me');
-	Route::get('/users/{user}', 'UserController@show');
-	Route::post('/users/{user}/relationships/users', 'UserRelationshipController@store');
-
-	Route::get('/posts', 'PostController@index');
-	Route::post('/posts', 'PostController@store');
+Route::prefix('api/rest/v1')->namespace('API\REST\v1')->middleware('auth:api')->group(function () {
+	Route::post('/users/{requester}/relationships', 'UserRelationshipsController@store');
+	Route::patch('/users/{addressee}/relationships/{requester}', 'UserRelationshipsController@update');
 });

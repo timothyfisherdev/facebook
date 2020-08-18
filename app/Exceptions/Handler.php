@@ -52,14 +52,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ValidationException) {
-            throw new ValidationErrorException($exception);
-        }
-
-        if ($exception instanceof AuthorizationException) {
-            throw new AuthorizationErrorException($exception);
-        }
-
         return parent::render($request, $exception);
     }
 }

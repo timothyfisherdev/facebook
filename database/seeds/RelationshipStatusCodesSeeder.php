@@ -1,5 +1,6 @@
 <?php
 
+use App\RelationshipStatusCode;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -19,11 +20,8 @@ class RelationshipStatusCodesSeeder extends Seeder
      */
     public function run()
     {
-    	$now = now();
-
-    	data_fill($this->data, '*.created_at', $now);
-    	data_fill($this->data, '*.updated_at', $now);
-
-        DB::table('relationship_status_codes')->insert($this->data);
+        RelationshipStatusCode::insert(
+            collect($this->data)->fillTimestamps()->toArray()
+        );
     }
 }

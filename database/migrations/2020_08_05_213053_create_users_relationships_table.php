@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRelationshipsUsersTable extends Migration
+class CreateUsersRelationshipsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateRelationshipsUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('relationships_users', function (Blueprint $table) {
+        Schema::create('users_relationships', function (Blueprint $table) {
             $table->unsignedBigInteger('requester_id');
             $table->unsignedBigInteger('addressee_id');
-            $table->char('status_code', 1);
             $table->timestamps();
 
             $table->foreign('requester_id')
@@ -29,14 +28,19 @@ class CreateRelationshipsUsersTable extends Migration
                 ->on('users')
                 ->onDelete('cascade');
 
-            $table->foreign('status_code')
-                ->references('code')
-                ->on('relationship_status_codes')
-                ->onDelete('cascade');
-
-            // Composite key
             $table->primary(['requester_id', 'addressee_id']);
         });
+
+        // Check constraint: https://dba.stackexchange.com/a/273480/213570
+        // User cannot have a relationship with themselves
+        \DB::statement('alter table `users_relationships` add check (requester_id != addressee_id)');
+
+        // Index expression: https://superuser.com/a/1491438
+        // User relationship can only appear once in the table
+        \DB::statement('alter table `users_relationships` 
+            add unique index `unique_users_relationships`
+            ((least(requester_id,addressee_id)), (greatest(requester_id,addressee_id)))'
+        );
     }
 
     /**
@@ -46,6 +50,6 @@ class CreateRelationshipsUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('relationships_users');
+        Schema::dropIfExists('users_relationships');
     }
 }
