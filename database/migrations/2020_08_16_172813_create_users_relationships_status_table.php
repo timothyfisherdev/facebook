@@ -39,9 +39,11 @@ class CreateUsersRelationshipsStatusTable extends Migration
             $table->primary(['requester_id', 'addressee_id', 'created_at'], 'pk_users_relationships_status');
         });
 
-        // Check constraint: https://dba.stackexchange.com/a/273480/213570
-        // User cannot have a relationship with themselves
-        \DB::statement('alter table `users_relationships_status` add check (requester_id != addressee_id)');
+        if (! app()->runningUnitTests()) {
+            // Check constraint: https://dba.stackexchange.com/a/273480/213570
+            // User cannot have a relationship with themselves
+            \DB::statement('alter table `users_relationships_status` add check (requester_id != addressee_id)');
+        }
     }
 
     /**

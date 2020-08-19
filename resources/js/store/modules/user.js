@@ -6,25 +6,31 @@ const state = {
 const getters = {
 	authUser: state => {
 		return state.user;
+	},
+	authUserLoading: state => {
+		return state.userLoading;
 	}
 };
 
 const actions = {
 	getAuthUser ({commit, state}) {
-		axios.get('/api/me')
+		axios.get('/api/rest/v1/users/me')
 			.then(res => {
-				commit('setAuthUser', res.data);
+				commit('setAuthUser', res.data.user);
 			}).catch(error => {
 				console.log('Unable to get the authenticated user.');
+			}).finally(() => {
+				commit('setAuthUserLoading', false);
 			});
 	}
 };
 
 const mutations = {
+	setAuthUserLoading (state, loading) {
+		state.userLoading = loading;
+	},
 	setAuthUser (state, user) {
-		user.data.attributes.id = user.data.id;
-		state.user = user.data.attributes;
-		state.userLoading = false;
+		state.user = user;
 	}
 };
 

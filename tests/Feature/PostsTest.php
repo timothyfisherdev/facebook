@@ -37,7 +37,7 @@ class PostsTest extends TestCase
         |--------------------------------------------------------------------------
         */
         $response->assertStatus(201)->assertJson([
-            'data' => [
+            'post' => [
                 'body' => $body
             ]
         ]);
@@ -47,7 +47,7 @@ class PostsTest extends TestCase
     }
 
     /** @test */
-    public function a_user_can_fetch_their_own_posts()
+    public function a_user_can_fetch_their_posts()
     {
         /*
         |--------------------------------------------------------------------------
@@ -71,17 +71,67 @@ class PostsTest extends TestCase
         | Assert
         |--------------------------------------------------------------------------
         */
-        $response->assertStatus(200)->assertJson([
-            'data' => [
+        $response->assertStatus(200)->assertExactJson([
+            'posts' => [
                 [
+                    'id' => $myPosts->last()->id,
                     'body' => $myPosts->last()->body,
                     'image' => $myPosts->last()->image,
                     'posted_at' => $myPosts->last()->created_at->diffForHumans()
                 ],
                 [
+                    'id' => $myPosts->first()->id,
                     'body' => $myPosts->first()->body,
                     'image' => $myPosts->first()->image,
                     'posted_at' => $myPosts->first()->created_at->diffForHumans()
+                ]
+            ]
+        ]);
+    }
+
+    /** @test */
+    public function a_user_can_fetch_their_posts_including_user_data()
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Arrange
+        |--------------------------------------------------------------------------
+        */
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $posts = factory(Post::class, 2)->create(['user_id' => $user->id]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Act
+        |--------------------------------------------------------------------------
+        */
+        $response = $this->getJson('/api/rest/v1/posts?include=user');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assert
+        |--------------------------------------------------------------------------
+        */
+        $response->assertStatus(200)->assertJson([
+            'posts' => [
+                [
+                    'body' => $posts->last()->body,
+                    'image' => $posts->last()->image,
+                    'posted_at' => $posts->last()->created_at->diffForHumans(),
+                    'posted_by' => [
+                        'id' => $user->id,
+                        'name' => $user->name
+                    ]
+                ],
+                [
+                    'body' => $posts->first()->body,
+                    'image' => $posts->first()->image,
+                    'posted_at' => $posts->first()->created_at->diffForHumans(),
+                    'posted_by' => [
+                        'id' => $user->id,
+                        'name' => $user->name
+                    ]
                 ]
             ]
         ]);

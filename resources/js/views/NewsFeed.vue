@@ -6,20 +6,17 @@
 			<p v-if="loading">Loading posts...</p>
 
 			<div v-else>
-				<p v-if="! posts.length">No posts to show.</p>
-
-				<div v-else>
+				<div v-if="posts">
 					<Post v-for="post in posts" :key="post.id" :post="post" />
 				</div>
+				
+				<p v-else>No posts to show.</p>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-	import * as r from 'ramda';
-	import * as ra from 'ramda-adjunct';
-	import merge from 'json-api-merge';
 	import AddPost from '../components/AddPost';
 	import Post from '../components/Post';
 
@@ -36,13 +33,11 @@
 			}
 		},
 		mounted () {
-			axios.get('/api/posts?include=user')
+			axios.get('/api/rest/v1/posts?include=user')
 				.then(res => {
-					let posts = merge(res.data.included, res.data.data);
-					
-					this.posts = posts.map((post) => {
-						post.attributes.user = post.relationships.user.data.attributes;
-						return post.attributes;
+					this.posts = res.data.posts.map((post) => {
+						post.posted_by = post.posted_by.name;
+						return post;
 					});
 				}).catch(err => {
 					console.log('Unable to fetch posts.');

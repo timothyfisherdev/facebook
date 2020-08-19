@@ -6,17 +6,17 @@
 					<img src="https://image.cnbcfm.com/api/v1/image/106330923-1578676182018gettyimages-1178141599.jpeg?v=1584633147&w=1400&h=950" alt="" class="w-8 h-8 object-cover rounded-full" />
 				</div>
 				<div class="ml-6">
-					<div class="text-sm font-bold">{{ post.user.name }}</div>
-					<div class="text-sm text-gray-600">{{ post.posted_at }}</div>
+					<div class="text-sm font-bold">{{ postedBy }}</div>
+					<div class="text-sm text-gray-600">{{ postedAt }}</div>
 				</div>
 			</div>
 			<div class="mt-4">
-				<p>{{ post.body }}</p>
+				<p>{{ body }}</p>
 			</div>
 		</div>
 
-		<div v-if="post.image">
-			<img :src="post.image" alt="" class="w-full" />
+		<div v-if="image">
+			<img :src="image" alt="" class="w-full" />
 		</div>
 
 		<div class="px-4 pt-2 flex justify-between text-gray-700 text-sm">
@@ -50,6 +50,14 @@
 			post: {
 				type: Object,
 				required: true
+			}
+		},
+		data () {
+			return {
+				body: this.post.body,
+				image: this.post.image,
+				postedBy: this.post.posted_by,
+				postedAt: this.post.posted_at
 			}
 		}
 	}

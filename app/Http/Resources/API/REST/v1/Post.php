@@ -15,9 +15,11 @@ class Post extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'body' => $this->body,
             'image' => $this->image,
-            'posted_at' => $this->created_at->diffForHumans()
+            'posted_at' => $this->created_at->diffForHumans(),
+            'posted_by' => User::make($this->whenLoaded('user'))
         ];
     }
 }

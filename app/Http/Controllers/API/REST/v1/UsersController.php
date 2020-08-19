@@ -4,8 +4,9 @@ namespace App\Http\Controllers\API\REST\v1;
 
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\API\REST\v1\User as UserResource;
 
@@ -32,23 +33,29 @@ class UsersController extends Controller
 	 * 
 	 * @param  \Illuminate\Http\Request $request
 	 * 
-	 * @return \Illuminate\Http\Resources\Json\JsonResource
+	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public function me(Request $request) : JsonResource
+	public function me(Request $request) : JsonResponse
 	{
-		return $this->show(auth()->user(), $request);
+		return $this->show(auth()->id(), $request);
 	}
 
 	/**
 	 * Get the user's data.
 	 * 
-	 * @param  \App\User                $user    User in request URI.
+	 * @param  string                   $userId    User in request URI.
 	 * @param  \Illuminate\Http\Request $request
 	 * 
-	 * @return \Illuminate\Http\Resources\Json\JsonResource
+	 * @return \Illuminate\Http\JsonResponse
 	 */
-    public function show(User $user, Request $request) : JsonResource
+    public function show(string $userId, Request $request) : JsonResponse
     {
-    	return new UserResource($user);
+    	$user = QueryBuilder::for(User::class, $request)
+    		->allowedIncludes('posts')
+    		->findOrFail($userId);
+
+    	return response()->json([
+    		'user' => new UserResource($user)
+    	]);
     }
 }
