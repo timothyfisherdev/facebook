@@ -69,15 +69,7 @@ class User extends Authenticatable
 
     public function declineRelationshipRequestFrom($user) : void
     {
-        $this->relationships()->detach($user);
         $this->attachRelationshipStatus($user, RelationshipStatusCode::DECLINED, 'addressee_id', 'requester_id');
-    }
-
-    public function updateRelationshipWith($user, string $action) : void
-    {
-        $action === 'accept'
-            ? $this->acceptRelationshipRequestFrom($user)
-            : $this->declineRelationshipRequestFrom($user);
     }
 
     public function hasRelationshipRequestFrom($user) : bool

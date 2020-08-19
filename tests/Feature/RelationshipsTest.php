@@ -46,7 +46,7 @@ class RelationshipsTest extends TestCase
         | Assert
         |--------------------------------------------------------------------------
         */
-        $response->assertCreated();
+        $response->assertNoContent();
 
         $this->assertCount(1, $relationships = $requester->relationships);
         $this->assertCount(1, $relationshipsWithStatus = $requester->relationshipsWithStatus);
@@ -241,9 +241,7 @@ class RelationshipsTest extends TestCase
 
         $this->actingAs($addressee, 'api');
 
-        $response = $this->patchJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}", [
-            'action' => 'accept'
-        ]);
+        $response = $this->putJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/accept", [], ['Content-Length' => 0]);
 
         /*
         |--------------------------------------------------------------------------
@@ -258,6 +256,46 @@ class RelationshipsTest extends TestCase
         $this->assertTrue($relationships->contains($addressee));
         $this->assertTrue($relationshipsWithStatus->contains($addressee));
         $this->assertEquals($relationshipsWithStatus->last()->pivot->status_code, 'A');
+    }
+
+    /** @test */
+    public function a_user_can_decline_a_relationship_request()
+    {
+        $this->withoutExceptionHandling();
+        /*
+        |--------------------------------------------------------------------------
+        | Arrange
+        |--------------------------------------------------------------------------
+        */
+        $requester = factory(User::class)->create();
+        $addressee = factory(User::class)->create();
+        
+        $this->actingAs($requester, 'api');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Act
+        |--------------------------------------------------------------------------
+        */
+        $this->postJson("/api/rest/v1/users/{$requester->id}/relationships", [
+            'user_id' => $addressee->id 
+        ]);
+
+        Carbon::setTestNow(now()->addSeconds(1));
+
+        $this->actingAs($addressee, 'api');
+
+        $response = $this->deleteJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/decline");
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assert
+        |--------------------------------------------------------------------------
+        */
+        $response->assertNoContent();
+
+        $this->assertCount(2, $relationshipsWithStatus = $requester->relationshipsWithStatus);
+        $this->assertEquals($relationshipsWithStatus->last()->pivot->status_code, 'D');
     }
 
     /** @test */
@@ -282,9 +320,7 @@ class RelationshipsTest extends TestCase
             'user_id' => $addressee->id 
         ]);
 
-        $response = $this->patchJson("/api/rest/v1/users/{$requester->id}/relationships/{$addressee->id}", [
-            'action' => 'accept'
-        ]);
+        $response = $this->putJson("/api/rest/v1/users/{$requester->id}/relationships/{$addressee->id}/accept", [], ['Content-Length' => 0]);
 
         /*
         |--------------------------------------------------------------------------

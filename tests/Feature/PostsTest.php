@@ -8,15 +8,25 @@ use Tests\TestCase;
 use App\User;
 use App\Post;
 
-class CreatePostsTest extends TestCase
+class PostsTest extends TestCase
 {
     use RefreshDatabase;
 
     /** @test */
     public function a_user_can_create_a_text_post()
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Arrange
+        |--------------------------------------------------------------------------
+        */
         $this->actingAs($user = factory(User::class)->create(), 'api');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Act
+        |--------------------------------------------------------------------------
+        */
         $response = $this->post('/api/posts', [
             'data' => [
                 'type' => 'posts',
@@ -26,6 +36,11 @@ class CreatePostsTest extends TestCase
             ]
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Assert
+        |--------------------------------------------------------------------------
+        */
         $this->assertCount(1, $posts = Post::all());
         $post = $posts->first();
 

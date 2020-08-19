@@ -24,12 +24,6 @@ class UpdateUserRelationship extends FormRequest
      */
     public function rules()
     {
-        return [
-            'action' => [
-                'required',
-                'string',
-                'in:accept,decline'
-            ]
-        ];
+        return [];
     }
 }
