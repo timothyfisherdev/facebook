@@ -13,7 +13,9 @@ use App\Http\Requests\UpdateUserRelationship;
  * Handles relationship requests between users.
  *
  * STORE (POST) - Request a relationship.
+ * 
  * UPDATE (PUT) - Accept a relationship request.
+ * 
  * DESTROY (DELETE) - Decline a relationship request.
  */
 class UsersRelationshipsController extends Controller
@@ -21,7 +23,7 @@ class UsersRelationshipsController extends Controller
     /**
      * Creates a relationship request between two users.
      * 
-     * @param  \App\Http\Requests\StoreUserRelationship    $request   Request.
+     * @param  \App\Http\Requests\StoreUserRelationship    $request
      * @param  \App\User                                   $requester The user requesting the relationship.
      * 
      * @return \Illuminate\Http\Response
@@ -36,7 +38,7 @@ class UsersRelationshipsController extends Controller
     /**
      * Accepts a relationship request between two users via a PUT request.
      * 
-     * @param  \App\Http\Requests\UpdateUserRelationship    $request   Request.
+     * @param  \App\Http\Requests\UpdateUserRelationship    $request
      * @param  \App\User                                    $addressee The recipient of the request.
      * @param  \App\User                                    $requester The user requesting the relationship.
      * 
@@ -52,7 +54,7 @@ class UsersRelationshipsController extends Controller
     /**
      * Declines a relationship request between two users.
      * 
-     * @param  \App\Http\Requests\UpdateUserRelationship     $request   Request.
+     * @param  \App\Http\Requests\UpdateUserRelationship     $request
      * @param  \App\User                                     $addressee The recipient of the request.
      * @param  \App\User                                     $requester The user requesting the relationship.
      * 

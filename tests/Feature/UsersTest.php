@@ -40,4 +40,36 @@ class UsersTest extends TestCase
             ]
         ]);
     }
+
+    /** @test */
+    public function a_user_can_fetch_other_users_data()
+    {
+        $this->withoutExceptionHandling();
+        /*
+        |--------------------------------------------------------------------------
+        | Arrange
+        |--------------------------------------------------------------------------
+        */
+        [$authUser, $otherUser] = factory(User::class, 2)->create();
+
+        $this->actingAs($authUser, 'api');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Act
+        |--------------------------------------------------------------------------
+        */
+        $response = $this->getJson('/api/rest/v1/users/' . $otherUser->id);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assert
+        |--------------------------------------------------------------------------
+        */
+        $response->assertStatus(200)->assertJson([
+            'data' => [
+                'name' => $otherUser->name
+            ]
+        ]);
+    }
 }

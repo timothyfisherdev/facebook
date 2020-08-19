@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\User;
 use App\Post;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PostsTest extends TestCase
 {
@@ -28,12 +28,7 @@ class PostsTest extends TestCase
         |--------------------------------------------------------------------------
         */
         $response = $this->postJson('/api/rest/v1/posts', [
-            'data' => [
-                'type' => 'posts',
-                'attributes' => [
-                    'body' => 'Testing body'
-                ]
-            ]
+            'body' => $body = 'Testing body'
         ]);
 
         /*
@@ -41,18 +36,52 @@ class PostsTest extends TestCase
         | Assert
         |--------------------------------------------------------------------------
         */
-        $this->assertCount(1, $posts = Post::all());
-        $post = $posts->first();
-
         $response->assertStatus(201)->assertJson([
             'data' => [
-                'type' => 'posts',
-                'id' => $post->id,
-                'attributes' => [
-                    'body' => 'Testing body'
+                'body' => $body
+            ]
+        ]);
+
+        $this->assertCount(1, Post::all());
+        $this->assertDatabaseHas('posts', ['body' => $body]);
+    }
+
+    /** @test */
+    public function a_user_can_fetch_their_own_posts()
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Arrange
+        |--------------------------------------------------------------------------
+        */
+        $this->actingAs($user = factory(User::class)->create(), 'api');
+
+        $myPosts = factory(Post::class, 2)->create(['user_id' => $user->id]);
+        $othersPosts = factory(Post::class, 2)->create();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Act
+        |--------------------------------------------------------------------------
+        */
+        $response = $this->getJson('/api/rest/v1/posts');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assert
+        |--------------------------------------------------------------------------
+        */
+        $response->assertStatus(200)->assertJson([
+            'data' => [
+                [
+                    'body' => $myPosts->last()->body,
+                    'image' => $myPosts->last()->image,
+                    'posted_at' => $myPosts->last()->created_at->diffForHumans()
                 ],
-                'links' => [
-                    'self' => url('/posts/' . $post->id)
+                [
+                    'body' => $myPosts->first()->body,
+                    'image' => $myPosts->first()->image,
+                    'posted_at' => $myPosts->first()->created_at->diffForHumans()
                 ]
             ]
         ]);
