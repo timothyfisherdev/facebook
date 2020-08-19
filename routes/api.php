@@ -18,6 +18,6 @@ Route::prefix('api/rest/v1')->namespace('API\REST\v1')->middleware('auth:api')->
 	Route::get('/users/me', 'UserController@me');
 
 	Route::post('/users/{requester}/relationships', 'UserRelationshipsController@store');
-	Route::put('/users/{addressee}/relationships/{requester}/accept', 'UserRelationshipsController@update');
-	Route::delete('/users/{addressee}/relationships/{requester}/decline', 'UserRelationshipsController@destroy');
+	Route::put('/users/{addressee}/relationships/{requester}/status', 'UserRelationshipsController@update');
+	Route::delete('/users/{addressee}/relationships/{requester}/status', 'UserRelationshipsController@destroy');
 });

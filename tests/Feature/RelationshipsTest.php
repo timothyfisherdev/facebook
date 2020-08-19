@@ -241,7 +241,7 @@ class RelationshipsTest extends TestCase
 
         $this->actingAs($addressee, 'api');
 
-        $response = $this->putJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/accept", [], ['Content-Length' => 0]);
+        $response = $this->putJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/status", [], ['Content-Length' => 0]);
 
         /*
         |--------------------------------------------------------------------------
@@ -285,7 +285,7 @@ class RelationshipsTest extends TestCase
 
         $this->actingAs($addressee, 'api');
 
-        $response = $this->deleteJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/decline");
+        $response = $this->deleteJson("/api/rest/v1/users/{$addressee->id}/relationships/{$requester->id}/status");
 
         /*
         |--------------------------------------------------------------------------
@@ -320,7 +320,7 @@ class RelationshipsTest extends TestCase
             'user_id' => $addressee->id 
         ]);
 
-        $response = $this->putJson("/api/rest/v1/users/{$requester->id}/relationships/{$addressee->id}/accept", [], ['Content-Length' => 0]);
+        $response = $this->putJson("/api/rest/v1/users/{$requester->id}/relationships/{$addressee->id}/status", [], ['Content-Length' => 0]);
 
         /*
         |--------------------------------------------------------------------------
