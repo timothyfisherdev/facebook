@@ -16,7 +16,7 @@ use App\Http\Requests\UpdateUserRelationship;
  * UPDATE (PUT) - Accept a relationship request.
  * DESTROY (DELETE) - Decline a relationship request.
  */
-class UserRelationshipsController extends Controller
+class UsersRelationshipsController extends Controller
 {
     /**
      * Creates a relationship request between two users.

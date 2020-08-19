@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\API\REST\v1\User as UserResource;
 
-class UserController extends Controller
+class UsersController extends Controller
 {
 	public function me(Request $request)
 	{

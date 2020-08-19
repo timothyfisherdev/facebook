@@ -27,7 +27,7 @@ class PostsTest extends TestCase
         | Act
         |--------------------------------------------------------------------------
         */
-        $response = $this->post('/api/posts', [
+        $response = $this->postJson('/api/rest/v1/posts', [
             'data' => [
                 'type' => 'posts',
                 'attributes' => [

@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('api/rest/v1')->namespace('API\REST\v1')->middleware('auth:api')->group(function () {
-	Route::get('/users/me', 'UserController@me');
+	Route::get('/users/me', 'UsersController@me');
 
-	Route::post('/users/{requester}/relationships', 'UserRelationshipsController@store');
-	Route::put('/users/{addressee}/relationships/{requester}/status', 'UserRelationshipsController@update');
-	Route::delete('/users/{addressee}/relationships/{requester}/status', 'UserRelationshipsController@destroy');
+	Route::post('/users/{requester}/relationships', 'UsersRelationshipsController@store');
+	Route::put('/users/{addressee}/relationships/{requester}/status', 'UsersRelationshipsController@update');
+	Route::delete('/users/{addressee}/relationships/{requester}/status', 'UsersRelationshipsController@destroy');
 });

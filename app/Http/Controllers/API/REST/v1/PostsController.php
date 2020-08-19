@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\REST\v1;
 
-use Illuminate\Http\Request;
 use App\Post;
-use App\Http\Resources\Post as PostResource;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\PostCollection;
-use Spatie\QueryBuilder\QueryBuilder;
+use App\Http\Resources\Post as PostResource;
 
-class PostController extends Controller
+class PostsController extends Controller
 {
 	public function index(Request $request)
 	{
